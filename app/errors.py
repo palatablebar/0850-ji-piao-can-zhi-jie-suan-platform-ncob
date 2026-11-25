@@ -18,6 +18,10 @@ MESSAGES = {
     "GATE_BLOCKED": "存在阻断项，不能签发",
     "NOT_APPROVED": "批次尚未签发",
     "BAD_REQUEST": "请求内容不完整",
+    "REBOOK_CASE_NOT_FOUND": "改期挂账案件不存在",
+    "REBOOK_DUPLICATE_TICKET": "该原票已建立改期挂账案件",
+    "REBOOK_UNBALANCED": "改期资金桶不守恒，已拒绝落账",
+    "REFUND_NOT_FOUND": "退款项不存在",
 }
 
 

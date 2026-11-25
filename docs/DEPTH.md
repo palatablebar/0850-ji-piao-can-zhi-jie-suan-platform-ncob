@@ -36,3 +36,16 @@
 ## 深度边界
 
 采信层区分编码、重复表头、列数、空值、全角字符、前导零与冲突重复；整理层负责单位和字段边界；计算层执行核心规则；判定层保留原因码；对账层要求来源行等于采信、隔离、重复和忽略之和；复核层使用版本号阻止陈旧签发。
+
+## 改期退款模块（M8）
+
+航司改期回执未到、原票退款临近到期时的挂账核退。状态机单调、资金五桶守恒、退款项幂等。
+
+| 模块 | 动作 | 入口 | 核心文件 | 测试 |
+|---|---|---|---|---|
+| M8 改期挂账 | 建案按时退不转新票税费、票价挂起待核 | `POST /api/rebook/cases` | `app/rebook/__init__.py` | `tests/test_rebook_domain.py` |
+| M8 回执处理 | 乱序回执不回退终态，成功抵扣/失败重核 | `POST /api/rebook/tickets/<no>/receipts` | `app/rebook/__init__.py` | `tests/test_rebook_domain.py` |
+| M8 退款签发 | 稳定键幂等，重试不新增实退 | `POST /api/rebook/tickets/<no>/refunds/<key>/issue` | `app/rebook/__init__.py` | `tests/test_rebook_http.py` |
+| M8 原票查询 | 按原票查实退与待核金额 | `GET /api/rebook/tickets/<no>` | `app/rebook/routes.py` | `tests/test_rebook_http.py` |
+
+五桶：`refunded`（已实退）、`pending`（待核）、`pending_refund`（待签发退款）、`credited`（已抵扣）、`tax_reserved`（税费预留），合计恒等于原票价加全部税费。规则细节见 `docs/REBOOK.md`。
